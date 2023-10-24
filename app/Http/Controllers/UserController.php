@@ -41,16 +41,16 @@ class UserController extends Controller
         return response($response, 201);
     }
     public function login(Request $request) {
-        $fields = $request->validate([
+        $request->validate([
             'email' => 'required|string',
             'password' => 'required|string'
         ]);
 
         // Check email
-        $user = User::where('email', $fields['email'])->first();
+        $user = User::where('email', $request->email)->first();
 
         // Check password
-        if(!$user || !Hash::check($fields['password'], $user->password)) {
+        if(!$user || !Hash::check($request->password, $user->password)) {
             return response([
                 'message' => 'Invalid input'
             ], 401);

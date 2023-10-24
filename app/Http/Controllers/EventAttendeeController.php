@@ -86,7 +86,7 @@ class EventAttendeeController extends Controller
             ]);
         }else{
             return response()->json([
-                'message' => 'No cart found'
+                'message' => 'No event attendee found'
             ]);
         }
     }
@@ -104,8 +104,8 @@ class EventAttendeeController extends Controller
     {
         //
         $validated = Validator::make($request->all(),[
-            'name' => 'required',
-            'address' => 'required',
+            'user_id' => 'required | integer',
+            'event_id' => 'required | integer',
         ]);
 
         if($validated -> fails()){
