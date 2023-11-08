@@ -65,7 +65,12 @@ class UserController extends Controller
         // $token = $user->createAuthToken('myapptoken',20)->plainTextToken;
 
         $response = [
-            'user' => $user,
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'roles' => $user->roles->first(), // Include the role names in the response
+            ],
             'token' => $token
         ];
 
