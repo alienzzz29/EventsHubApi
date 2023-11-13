@@ -26,6 +26,10 @@ use Illuminate\Support\Facades\Route;
 Route::post('/login', [UserController::class, 'login']); // Login User
 Route::post('/register', [UserController::class, 'register']); // Register User
 
+//Public Routes
+Route::get('/events', [EventController::class, 'index']);
+Route::get('/event/{id}', [EventController::class, 'show']);
+
 Route::group(['middleware'=>['auth:sanctum']],function(){
     // Venue
     Route::get('/venues', [VenueController::class, 'index']);
@@ -40,9 +44,9 @@ Route::group(['middleware'=>['auth:sanctum']],function(){
     Route::post('/category/{id}/update', [CategoryController::class, 'update']);
     Route::delete('/category/{id}/delete', [CategoryController::class, 'delete']);
     // Event
-    Route::get('/events', [EventController::class, 'index']);
+    // Route::get('/events', [EventController::class, 'index']);
     Route::post('/events', [EventController::class, 'store']);
-    Route::get('/event/{id}', [EventController::class, 'show']);
+    // Route::get('/event/{id}', [EventController::class, 'show']);
     Route::post('/event/{id}/update', [EventController::class, 'update']);
     Route::delete('/event/{id}/delete', [EventController::class, 'delete']);
     // User
