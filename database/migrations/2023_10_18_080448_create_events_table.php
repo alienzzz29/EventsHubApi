@@ -15,7 +15,10 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->text('description');
-            $table->dateTime('date');
+            $table->dateTime('date_sched_start');
+            $table->dateTime('date_sched_end');
+            $table->dateTime('date_reg_deadline');
+            $table->integer('est_attendants');
             $table->string('location');
             $table->bigInteger('category_id');
             $table->bigInteger('venue_id');

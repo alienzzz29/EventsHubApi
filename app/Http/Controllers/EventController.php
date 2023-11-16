@@ -23,9 +23,25 @@ class EventController extends Controller
         $events = Event::paginate(20);
 
         if($events -> count() >0){
+            $eventData = $events->map(function ($event) {
+                return [
+                    'id' => $event->id,
+                    'name' => $event->name,
+                    'description' => $event->description,
+                    'date_sched_start' => $event->date_sched_start,
+                    'date_sched_end' => $event->date_sched_end,
+                    'date_reg_deadline' => $event->date_reg_deadline,
+                    'est_attendants' => $event->est_attendants,
+                    'location' => $event->location,
+                    'category_id' => $event->category,
+                    'venue_id' => $event->venue,
+                    'user_id' => $event->user_id
+                ];
+            });
+    
             return response()->json([
                 'status' => 'success',
-                'events' => $events
+                'events' => $eventData
             ]);
         }else{
             return response()->json([
@@ -49,7 +65,10 @@ class EventController extends Controller
         $validated = Validator::make($request->all(), [
             'name' => 'required',
             'description' => 'required | max:166',
-            'date' => 'required| date',
+            'date_sched_start' => 'required',
+            'date_sched_end' => 'required',
+            'date_reg_deadline' => 'required',
+            'est_attendants' => 'required | integer',
             'location' => 'required',
             'category_id' => 'required|integer',
             'venue_id' => 'required|integer',
@@ -87,7 +106,21 @@ class EventController extends Controller
         if($event){
             return response()->json([
                 'status' => 'success',
-                'event' => $event
+                // 'event' => $event
+                'event' => [
+                    'id' => $event->id,
+                    'name' => $event->name,
+                    'description' => $event->description,
+                    'date_sched_start' => $event->date_sched_start,
+                    'date_sched_end' => $event->date_sched_end,
+                    'date_reg_deadline' => $event->date_reg_deadline,
+                    'est_attendants' => $event->est_attendants,
+                    'location' => $event->location,
+                    'category_id' => $event->category,
+                    'venue_id' => $event->venue,
+                    'user_id' => $event->user_id
+
+                ]
             ]);
         }else{
             return response()->json([
@@ -111,7 +144,10 @@ class EventController extends Controller
         $validated = Validator::make($request->all(),[
             'name' => 'required',
             'description' => 'required | max:166',
-            'date' => 'required| date',
+            'date_sched_start' => 'required',
+            'date_sched_end' => 'required',
+            'date_reg_deadline' => 'required',
+            'est_attendants' => 'required | integer',
             'location' => 'required',
             'category_id' => 'required|integer',
             'venue_id' => 'required|integer',
