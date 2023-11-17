@@ -20,7 +20,7 @@ class EventController extends Controller
     public function index()
     {
         //$events = Event::all();
-        $events = Event::paginate(20);
+        $events = Event::paginate(10);
 
         if($events -> count() >0){
             $eventData = $events->map(function ($event) {
@@ -41,7 +41,12 @@ class EventController extends Controller
     
             return response()->json([
                 'status' => 'success',
-                'events' => $eventData
+                'events' => $eventData,
+                'pagination' => [
+                    'current_page' => $events->currentPage(),
+                    'total' => $events->total(),
+                    'per_page' => $events->perPage(),
+                ]
             ]);
         }else{
             return response()->json([
