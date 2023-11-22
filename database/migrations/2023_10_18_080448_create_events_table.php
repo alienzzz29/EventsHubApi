@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('location');
             $table->bigInteger('category_id');
             $table->bigInteger('venue_id');
+            $table->boolean('is_enabled')->default(false); 
             $table->bigInteger('user_id');
             $table->timestamps();
         });

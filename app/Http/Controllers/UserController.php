@@ -94,4 +94,25 @@ class UserController extends Controller
     {
         return User::where('name', 'like','%'.$name.'%')->get();
     }
+
+    // public function eventsAttended(string $id)
+    // {
+
+    //     // return User::find($id)->eventAttendees;
+    //     $userByID = User::find($id)->eventAttendees->with('event')->get();
+    //     return response()->json([
+    //         'message' => 'Showing all events',
+    //         'user' =>  $userByID
+    //     ]);
+    // }
+    
+    // public function eventsAttended(string $id)
+    // {
+    //     $userEvents = User::with(['eventAttendees.event'])->find($id);
+        
+    //     return response()->json([
+    //         'message' => 'Showing all events by user',
+    //         'user_events' =>  $userEvents->eventAttendees
+    //     ]);
+    // }
 }

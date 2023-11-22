@@ -19,6 +19,7 @@ class Event extends Model
         'location',
         'category_id',
         'venue_id',
+        'is_enabled',
         'user_id'
     ];
 

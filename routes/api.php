@@ -52,13 +52,14 @@ Route::group(['middleware'=>['auth:sanctum']],function(){
     // User
     Route::get('/users', [UserController::class, 'index']); // Show Users
     Route::get('/users/search/{name}', [UserController::class, 'search']); // Search User
-
+    // Route::get('/users/events_attended/{id}', [UserController::class, 'eventsAttended']); // Search User
     // Event Attendeee
     Route::get('/event_attendees', [EventAttendeeController::class, 'index']);
     Route::post('/event_attendees', [EventAttendeeController::class, 'store']);
     Route::get('/event_attendee/{id}', [EventAttendeeController::class, 'show']);
     Route::post('/event_attendee/{id}/update', [EventAttendeeController::class, 'update']);
     Route::delete('/event_attendee/{id}/delete', [EventAttendeeController::class, 'delete']);
+    Route::get('/event_attendee/user/{user_id}', [EventAttendeeController::class, 'getByUserId']);
 });
 
 

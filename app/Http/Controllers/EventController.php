@@ -20,7 +20,7 @@ class EventController extends Controller
     public function index()
     {
         //$events = Event::all();
-        $events = Event::paginate(10);
+        $events = Event::where('is_enabled', true)->paginate(10);
 
         if($events -> count() >0){
             $eventData = $events->map(function ($event) {
@@ -35,6 +35,7 @@ class EventController extends Controller
                     'location' => $event->location,
                     'category_id' => $event->category,
                     'venue_id' => $event->venue,
+                    'is_enabled' => $event->is_enabled,
                     'user_id' => $event->user_id
                 ];
             });
@@ -77,6 +78,7 @@ class EventController extends Controller
             'location' => 'required',
             'category_id' => 'required|integer',
             'venue_id' => 'required|integer',
+            'is_enabled' => 'required|boolean',
             'user_id' => 'required|integer',
         ]);
 
@@ -123,6 +125,7 @@ class EventController extends Controller
                     'location' => $event->location,
                     'category_id' => $event->category,
                     'venue_id' => $event->venue,
+                    'is_enabled' => $event->is_enabled,
                     'user_id' => $event->user_id
 
                 ]
@@ -156,6 +159,7 @@ class EventController extends Controller
             'location' => 'required',
             'category_id' => 'required|integer',
             'venue_id' => 'required|integer',
+            'is_enabled' => 'required|boolean',
             'user_id' => 'required|integer',
         ]);
 

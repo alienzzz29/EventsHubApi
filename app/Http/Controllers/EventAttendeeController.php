@@ -48,7 +48,8 @@ class EventAttendeeController extends Controller
         //
         $validated = Validator::make($request->all(), [
             'user_id' => 'required | integer',
-            'event_id' => 'required | integer',
+            // 'event_id' => 'required | integer | unique:App\Models\EventAttendee,event_id',
+            'event_id' => 'required|integer|unique:event_attendees,event_id,NULL,id,user_id,' . $request->user_id,
         ]);
 
         if($validated -> fails()){
@@ -56,13 +57,17 @@ class EventAttendeeController extends Controller
                 'message' => $validated->messages()
             ]);
         }else{
-            EventAttendee::create($request->all());
+            $eventAttendee = EventAttendee::create($request->all());
 
-            $eventAttendees = EventAttendee::all();
+            $latestEventAttendeeWithEvent = EventAttendee::with('event')
+            ->where('id', $eventAttendee->id) // Filter by the newly created EventAttendee's ID
+            ->first();
+
+            // $eventAttendee = EventAttendee::with('event')->where('user_id', $request->user_id)->get();
 
             return response()->json([
                 'message' => 'Event Attendee added successfully',
-                'eventAttendee' => $eventAttendees
+                'eventAttendee' => $latestEventAttendeeWithEvent
             ]);
         }
     }
@@ -158,4 +163,19 @@ class EventAttendeeController extends Controller
         }
     }
 
+    public function getByUserId(int $user_id)
+    {
+        $eventAttendees = EventAttendee::with('event')->where('user_id',$user_id)->get();
+
+        if($eventAttendees){
+            return response()->json([
+                'status' => 'success',
+                'eventAttendees' => $eventAttendees
+            ]);
+        }else{
+            return response()->json([
+                'message' => 'No event attendees found for this user'
+            ], 404);
+        }
+    }
 }
