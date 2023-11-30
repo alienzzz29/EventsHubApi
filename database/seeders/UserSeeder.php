@@ -24,7 +24,9 @@ class UserSeeder extends Seeder
         $attendee = Role::create(['guard_name' => 'api','name' => 'attendee']);
         
         User::create([
-                'name' => 'Admin',
+                'first_name' => 'Admin',
+                'last_name' => 'Admin',
+                'contact_no' => '00000000000',
                 'email' => 'admin@gmail.com',
                 'password' => bcrypt('Admin'),
         ])->assignRole($admin);// role

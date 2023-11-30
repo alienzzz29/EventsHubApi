@@ -30,7 +30,9 @@ it('test_register_api', function(){
     $password = $this->faker->password();
 
     $formData = [
-        'name'=> $this->faker->name(),
+        'first_name'=> $this->faker->name(),
+        'last_name'=> $this->faker->name(),
+        'contact_no'=> '1000',
         'email'=> $this->faker->email(),
         'password'=> $password,
         'password_confirmation'=> $password

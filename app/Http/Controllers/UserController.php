@@ -20,13 +20,17 @@ class UserController extends Controller
         $role = Role::where('id', 3)->get();
 
         $fields = $request->validate([
-            'name' => 'required|string',
+            'first_name' => 'required|string',
+            'last_name' => 'required|string',
+            'contact_no' => 'required|string',
             'email' => 'required|string|unique:users,email',
             'password' => 'required|string|confirmed'
         ]);
 
         $user = User::create([
-            'name' => $fields['name'],
+            'first_name' => $fields['first_name'],
+            'last_name' => $fields['last_name'],
+            'contact_no' => $fields['contact_no'],
             'email' => $fields['email'],
             'password' => bcrypt($fields['password']),
         ])->assignRole($role);
@@ -67,7 +71,9 @@ class UserController extends Controller
         $response = [
             'user' => [
                 'id' => $user->id,
-                'name' => $user->name,
+                'first_name' => $user->first_name,
+                'last_name' => $user->last_name,
+                'contact_no' => $user->contact_no,
                 'email' => $user->email,
                 'roles' => $user->roles->first(), // Include the role names in the response
             ],
