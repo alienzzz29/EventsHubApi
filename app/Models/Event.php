@@ -4,10 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
-class Event extends Model
+class Event extends Model implements HasMedia
 {
-    use HasFactory;
+    use HasFactory, InteractsWithMedia;
 
     protected $fillable = [
         'name',
@@ -18,8 +20,8 @@ class Event extends Model
         'est_attendants',
         'location',
         'category_id',
-        'venue_id',
-        'is_enabled',
+        'venue_id', 
+        'event_status',
         'user_id'
     ];
 
@@ -34,9 +36,15 @@ class Event extends Model
     public function user(){
         return $this->belongsTo(User::class);
     }
-
     
     public function eventAttendees(){
         return $this->hasMany(eventAttendee::class);
     }
+
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('banners')
+            ->singleFile(); // Adjust the collection name and configuration as needed
+    }
+
 }

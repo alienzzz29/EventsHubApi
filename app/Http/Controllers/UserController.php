@@ -101,6 +101,36 @@ class UserController extends Controller
         return User::where('name', 'like','%'.$name.'%')->get();
     }
 
+    public function store(Request $request){
+        
+
+        $fields = $request->validate([
+            'first_name' => 'required|string',
+            'last_name' => 'required|string',
+            'contact_no' => 'required|string',
+            'email' => 'required|string|unique:users,email',
+            'password' => 'required|string|confirmed',
+            'role_id' => 'required|integer'
+        ]);
+        $role = Role::where('id', $fields['role_id'])->get();
+
+        $user = User::create([
+            'first_name' => $fields['first_name'],
+            'last_name' => $fields['last_name'],
+            'contact_no' => $fields['contact_no'],
+            'email' => $fields['email'],
+            'password' => bcrypt($fields['password']),
+        ])->assignRole($role);
+
+        $token = $user->createToken('myapptoken')->plainTextToken;
+
+        $response = [
+            'user' => $user,
+            'token' => $token
+        ];
+
+        return response($response, 201);
+    }
     // public function eventsAttended(string $id)
     // {
 

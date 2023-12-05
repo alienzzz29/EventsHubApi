@@ -145,10 +145,11 @@ class EventAttendeeController extends Controller
      * @urlParam id integer required ID of post.
      * @response 200 {"message":"Post deleted successfully","remaining posts":[{"id":5,"user_id":3,"text":"Good Morning!","created_at":"2023-10-10T01:08:30.000000Z","updated_at":"2023-10-10T01:08:30.000000Z"},{"id":6,"user_id":3,"text":"Good Morning!","created_at":"2023-10-10T01:20:08.000000Z","updated_at":"2023-10-10T01:20:08.000000Z"}]}
      */
-    public function delete(string $id)
+    public function delete(int $event_id, int $user_id)
     {
         //
-        $eventAttendee = EventAttendee::find($id);
+        // $eventAttendee = EventAttendee::find($id);  
+        $eventAttendee = EventAttendee::where('event_id', $event_id)->where('user_id', $user_id)->firstOrFail();  
         if($eventAttendee){
             $eventAttendee->delete();
             $eventAttendees = EventAttendee::all();

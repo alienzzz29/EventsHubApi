@@ -30,5 +30,13 @@ class UserSeeder extends Seeder
                 'email' => 'admin@gmail.com',
                 'password' => bcrypt('Admin'),
         ])->assignRole($admin);// role
+
+        User::create([
+            'first_name' => 'Merchant',
+            'last_name' => 'Merchant',
+            'contact_no' => '00000000000',
+            'email' => 'merchant@gmail.com',
+            'password' => bcrypt('Merchant'),
+    ])->assignRole($merchant);// role
     }
 }

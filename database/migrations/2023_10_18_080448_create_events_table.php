@@ -22,7 +22,7 @@ return new class extends Migration
             $table->string('location');
             $table->bigInteger('category_id');
             $table->bigInteger('venue_id');
-            $table->boolean('is_enabled')->default(false); 
+            $table->integer('event_status');//0,1,2 ;0 = disabled, 1 = enabled, 2 = expired
             $table->bigInteger('user_id');
             $table->timestamps();
         });

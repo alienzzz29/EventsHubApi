@@ -28,7 +28,7 @@ class EventsSeeder extends Seeder
                 'location' => 'Location ' . $i,
                 'category_id' => rand(1, 2), // Assuming category IDs range from 1 to 5
                 'venue_id' => rand(1, 2), // Assuming venue IDs range from 1 to 10
-                'is_enabled' => true,
+                'event_status' => rand(0, 2),
                 'user_id' => 1,
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),

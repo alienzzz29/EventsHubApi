@@ -51,6 +51,11 @@ Route::group(['middleware'=>['auth:sanctum']],function(){
     Route::delete('/event/{id}/delete', [EventController::class, 'delete']);
     // User
     Route::get('/users', [UserController::class, 'index']); // Show Users
+    Route::post('/users', [UserController::class, 'store']);
+    // Route::get('/users/{id}', [UserController::class, 'show']);
+    // Route::post('/users/{id}/update', [UserController::class, 'update']);
+    // Route::delete('/users/{id}/delete', [UserController::class, 'delete']);
+
     Route::get('/users/search/{name}', [UserController::class, 'search']); // Search User
     // Route::get('/users/events_attended/{id}', [UserController::class, 'eventsAttended']); // Search User
     // Event Attendeee
@@ -58,7 +63,7 @@ Route::group(['middleware'=>['auth:sanctum']],function(){
     Route::post('/event_attendees', [EventAttendeeController::class, 'store']);
     Route::get('/event_attendee/{id}', [EventAttendeeController::class, 'show']);
     Route::post('/event_attendee/{id}/update', [EventAttendeeController::class, 'update']);
-    Route::delete('/event_attendee/{id}/delete', [EventAttendeeController::class, 'delete']);
+    Route::delete('/event_attendee/event/{event_id}/user/{user_id}/delete', [EventAttendeeController::class, 'delete']);
     Route::get('/event_attendee/user/{user_id}', [EventAttendeeController::class, 'getByUserId']);
 });
 
