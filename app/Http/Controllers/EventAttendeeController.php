@@ -73,6 +73,54 @@ class EventAttendeeController extends Controller
     }
 
     /**
+     * Create Post
+     * 
+     * Creates a post
+     * @bodyParam user_id int required user_id
+     * @bodyParam text string required text
+     * 
+     * @response 200 {"message":"Post added successfully","post":[{"id":4,"user_id":10,"text":"Good Evening!","created_at":"2023-10-09T08:21:34.000000Z","updated_at":"2023-10-09T08:22:25.000000Z"},{"id":5,"user_id":3,"text":"Good Morning!","created_at":"2023-10-10T01:08:30.000000Z","updated_at":"2023-10-10T01:08:30.000000Z"}]}
+     */
+    public function bulkstore(Request $request)
+    {
+        // Validate the incoming request data for each attendee in the array
+        $validated = Validator::make($request->all(), [
+            'attendees' => 'required|array',
+            'attendees.*.user_id' => 'required|integer',
+            'attendees.*.event_id' => 'required|integer|unique:event_attendees,event_id,NULL,id,user_id,' . $request->input('attendees.*.user_id'),
+            // Add more validation rules for other fields if needed
+        ]);
+
+        // Check if validation fails
+        if ($validated->fails()) {
+            return response()->json([
+                'message' => $validated->messages()
+            ], 422); // Return a 422 status code for validation errors
+        } else {
+            // Array to hold created attendees
+            $createdAttendees = [];
+
+            // Loop through each attendee in the array and create EventAttendee records
+            foreach ($request->input('attendees') as $attendeeData) {
+                $eventAttendee = EventAttendee::create($attendeeData);
+                $createdAttendees[] = $eventAttendee;
+            }
+
+            // Fetch the created attendees with their associated events
+            $attendeesWithEvents = EventAttendee::with('event')
+                ->whereIn('id', collect($createdAttendees)->pluck('id')->toArray())
+                ->get();
+
+            // Return a success response with the details of the created event attendees
+            return response()->json([
+                'message' => 'Event Attendees added successfully',
+                'attendees' => $attendeesWithEvents
+            ], 201); // Return a 201 status code for successful creation
+        }
+    }
+
+
+    /**
      * Find Post
      * 
      * Find post by ID
@@ -166,12 +214,46 @@ class EventAttendeeController extends Controller
 
     public function getByUserId(int $user_id)
     {
-        $eventAttendees = EventAttendee::with('event')->where('user_id',$user_id)->get();
+        // $eventAttendees = EventAttendee::with('event')->where('user_id',$user_id)->get();
+        $eventAttendees = EventAttendee::with('event.media') // Eager load event and its media
+        ->where('user_id', $user_id)
+        ->get();
 
-        if($eventAttendees){
+        // if($eventAttendees){
+        //     return response()->json([
+        //         'status' => 'success',
+        //         'eventAttendees' => $eventAttendees
+        //     ]);
+        if ($eventAttendees->isNotEmpty()) {
+            $formattedEventAttendees = $eventAttendees->map(function ($attendee) {
+                return [
+                    'id' => $attendee->event->id,
+                    'name' => $attendee->event->name,
+                    'description' => $attendee->event->description,
+                    'date_sched_start' => $attendee->event->date_sched_start,
+                    'date_sched_end' => $attendee->event->date_sched_end,
+                    'date_reg_deadline' => $attendee->event->date_reg_deadline,
+                    'est_attendants' => $attendee->event->est_attendants,
+                    'location' => $attendee->event->location,
+                    'category_id' => $attendee->event->category, // Use the actual foreign key field
+                    'venue_id' => $attendee->event->venue, // Use the actual foreign key field
+                    'event_status' => $attendee->event->event_status,
+                    'user_id' => $attendee->event->user_id,
+                    'media' => $attendee->event->media->map(function ($media) {
+                        return [
+                            'id' => $media->id,
+                            'file_name' => $media->file_name,
+                            'url' => $media->getUrl(),
+                            // Add more attributes if needed
+                        ];
+                    }),
+                    // Add more attendee-related attributes if needed
+                ];
+            });
+    
             return response()->json([
                 'status' => 'success',
-                'eventAttendees' => $eventAttendees
+                'eventAttendees' => $formattedEventAttendees
             ]);
         }else{
             return response()->json([

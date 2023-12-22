@@ -16,22 +16,60 @@ class VenueController extends Controller
      * @response 200 {"status": "success","posts": [{"id": 4,"user_id": 10,"text": "Good Evening!","created_at": "2023-10-09T08:21:34.000000Z","updated_at": "2023-10-09T08:22:25.000000Z"}]}
      * 
      */
+    // public function index()
+    // {
+    //     //
+    //     // $venues = Venue::all();
+    //     $venues = Venue::paginate(8);
+    //     if($venues -> count() >0){
+    //         return response()->json([
+    //             'status' => 'success',
+    //             // 'venues' => $venues,
+    //             // 'venues' => [],
+    //             'pagination' => [
+    //                 'current_page' => $venues->currentPage(),
+    //                 'total' => $venues->total(),
+    //                 'per_page' => $venues->perPage(),
+    //             ]
+    //         ]);
+    //     }else{
+    //         return response()->json([
+    //             'message' => 'Venues empty'
+    //         ]);
+    //     }
+    // }
     public function index()
-    {
-        //
-        $venues = Venue::all();
+{
+    //$venues = Venue::all();
+    $venues = Venue::paginate(8);
 
-        if($venues -> count() >0){
-            return response()->json([
-                'status' => 'success',
-                'venues' => $venues
-            ]);
-        }else{
-            return response()->json([
-                'message' => 'Venues empty'
-            ]);
-        }
+    if ($venues->count() > 0) {
+        $transformedVenues = $venues->map(function ($venue) {
+            // Format and transform each venue as needed
+            return [
+                'id' => $venue->id,
+                'name' => $venue->name,
+                'address' => $venue->address
+                // Add other properties and transformations as needed
+            ];
+        });
+
+        return response()->json([
+            'status' => 'success',
+            'venues' => $transformedVenues,
+            'pagination' => [
+                'current_page' => $venues->currentPage(),
+                'total' => $venues->total(),
+                'per_page' => $venues->perPage(),
+            ]
+        ]);
+    } else {
+        return response()->json([
+            'message' => 'Venues empty'
+        ]);
     }
+}
+
 
     /**
      * Create Post

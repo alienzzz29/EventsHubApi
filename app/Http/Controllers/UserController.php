@@ -12,7 +12,19 @@ class UserController extends Controller
 {
     //
     public function index(){
-        return User::all();
+        // return User::all();
+        // $users = User::with('roles')->paginate(8);
+        $users = User::with('roles')->where('id', '!=', 1)->paginate(8);
+
+        return response()->json([
+            'status' => 'success',
+            'users' => $users,
+            'pagination' => [
+                'current_page' => $users->currentPage(),
+                'total' => $users->total(),
+                'per_page' => $users->perPage(),
+            ]
+        ]);
     }
 
     
@@ -125,30 +137,109 @@ class UserController extends Controller
         $token = $user->createToken('myapptoken')->plainTextToken;
 
         $response = [
-            'user' => $user,
+            // 'user' => $user,
+            // 'token' => $token
+            'user' => [
+                'id' => $user->id,
+                'first_name' => $user->first_name,
+                'last_name' => $user->last_name,
+                'contact_no' => $user->contact_no,
+                'email' => $user->email,
+                'roles' => $user->roles->first(), // Include the role names in the response
+            ],
             'token' => $token
         ];
 
         return response($response, 201);
     }
-    // public function eventsAttended(string $id)
-    // {
 
-    //     // return User::find($id)->eventAttendees;
-    //     $userByID = User::find($id)->eventAttendees->with('event')->get();
-    //     return response()->json([
-    //         'message' => 'Showing all events',
-    //         'user' =>  $userByID
-    //     ]);
-    // }
-    
-    // public function eventsAttended(string $id)
-    // {
-    //     $userEvents = User::with(['eventAttendees.event'])->find($id);
+    public function update(Request $request, string $id)
+    {
+        $fields = $request->validate([
+            'first_name' => 'required|string',
+            'last_name' => 'required|string',
+            'contact_no' => 'required|string',
+            'password' => 'sometimes|required|string|confirmed'// Only required when provided
+            // 'role_id' => 'required|integer'
+        ]);
         
-    //     return response()->json([
-    //         'message' => 'Showing all events by user',
-    //         'user_events' =>  $userEvents->eventAttendees
+        $user = User::find($id);
+
+        if ($user) {
+            // $user->update([
+            //     'first_name' => $fields['first_name'],
+            //     'last_name' => $fields['last_name'],
+            //     'contact_no' => $fields['contact_no'],
+            //     'password' => isset($fields['password']) ? bcrypt($fields['password']) : $user->password,
+            // ]);
+
+            $user->update($request->all());
+
+            // $role = Role::where('id', $fields['role_id'])->first();
+            // if ($role) {
+            //     $user->syncRoles([$role->id]);
+            // }
+
+            return response()->json([
+                'message' => 'User updated successfully',
+                'user' => [
+                    'id' => $user->id,
+                    'first_name' => $user->first_name,
+                    'last_name' => $user->last_name,
+                    'contact_no' => $user->contact_no,
+                    'email' => $user->email,
+                    'roles' => $user->roles->first(), // Include the role names in the response
+                ]
+            ]);
+        } else {
+            return response()->json([
+                'message' => 'User not found'
+            ], 404);
+        }
+    }
+
+
+    // public function update(Request $request, string $id)
+    // {
+    //     //
+    //     $validated = Validator::make($request->all(),[
+    //         'name' => 'required',
+    //         'description' => 'required | max:166',
+    //         'date_sched_start' => 'required',
+    //         'date_sched_end' => 'required',
+    //         'date_reg_deadline' => 'required',
+    //         'est_attendants' => 'required | integer',
+    //         'location' => 'required',
+    //         'images' => 'required|image|mimes:jpg,png,jpeg,gif,svg|max:2048', 
+    //         'category_id' => 'required|integer',
+    //         'venue_id' => 'required|integer',
+    //         'event_status' => 'required|integer',
+    //         'user_id' => 'required|integer',
     //     ]);
+
+    //     if($validated -> fails()){
+    //         return response()->json([
+    //             'message' => $validated->messages()
+    //         ]);
+    //     }else{
+    //         $event = Event::find($id);
+            
+    //         if ($event) {
+    //             # code...
+    //             $event->update($request->all());
+
+    //             return response()->json([
+    //                 'message' => 'event updated successfully',
+    //                 'event' => $event
+    //             ]);
+    //         }else{
+    //             return response()->json([
+    //                 'message' => 'No event found'
+    //             ]); 
+    //         }
+
+            
+    //     }
     // }
+   
 }
