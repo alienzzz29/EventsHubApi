@@ -61,7 +61,7 @@ Route::group(['middleware'=>['auth:sanctum']],function(){
     Route::post('/users', [UserController::class, 'store']);
     // Route::get('/users/{id}', [UserController::class, 'show']);
     Route::post('/users/{id}/update', [UserController::class, 'update']);
-    // Route::delete('/users/{id}/delete', [UserController::class, 'delete']);
+    Route::delete('/users/{id}/delete', [UserController::class, 'delete']);
 
     Route::get('/users/search/{name}', [UserController::class, 'search']); // Search User
     // Route::get('/users/events_attended/{id}', [UserController::class, 'eventsAttended']); // Search User

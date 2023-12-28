@@ -197,7 +197,23 @@ class UserController extends Controller
             ], 404);
         }
     }
-
+    public function delete(string $id)
+    {
+        //
+        $user = User::find($id);
+        if($user){
+            $user->delete();
+            $users = User::all();
+            return response()->json([
+                'message' => 'Users deleted successfully',
+                'remaining users' => $users
+            ]);
+        }else{
+            return response()->json([
+                'message' => 'No user found'
+            ]);
+        }
+    }
 
     // public function update(Request $request, string $id)
     // {
