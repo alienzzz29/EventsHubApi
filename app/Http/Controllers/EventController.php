@@ -66,6 +66,54 @@ class EventController extends Controller
         }
     }
 
+    public function indexAdmin()
+    {
+        //$events = Event::all();
+        $events = Event::whereIn('event_status', [0, 1])->paginate(10);
+
+        if($events -> count() >0){
+            $eventData = $events->map(function ($event) {
+                $eventWithMedia = $event->load('media');
+                return [
+                    'id' => $eventWithMedia->id,
+                    'name' => $eventWithMedia->name,
+                    'description' => $eventWithMedia->description,
+                    'date_sched_start' => $eventWithMedia->date_sched_start,
+                    'date_sched_end' => $eventWithMedia->date_sched_end,
+                    'date_reg_deadline' => $eventWithMedia->date_reg_deadline,
+                    'est_attendants' => $eventWithMedia->est_attendants,
+                    'location' => $eventWithMedia->location,
+                    'category_id' => $eventWithMedia->category, // Use the actual foreign key field
+                    'venue_id' => $eventWithMedia->venue, // Use the actual foreign key field
+                    'event_status' => $eventWithMedia->event_status,
+                    'user_id' => $eventWithMedia->user,
+                    'media' => $eventWithMedia->media->map(function ($media) {
+                        return [
+                            'id' => $media->id,
+                            'file_name' => $media->file_name,
+                            'url' => $media->getUrl(), // Get the URL of the media
+                            // Add more attributes if needed
+                        ];
+                    }),
+                ];
+            });
+    
+            return response()->json([
+                'status' => 'success',
+                'events' => $eventData,
+                'pagination' => [
+                    'current_page' => $events->currentPage(),
+                    'total' => $events->total(),
+                    'per_page' => $events->perPage(),
+                ]
+            ]);
+        }else{
+            return response()->json([
+                'message' => 'events empty'
+            ]);
+        }
+    }
+
     /**
      * Create Post
      * 
@@ -296,6 +344,38 @@ class EventController extends Controller
             'venue_id' => 'required|integer',
             'event_status' => 'required|integer',
             'user_id' => 'required|integer',
+        ]);
+
+        if($validated -> fails()){
+            return response()->json([
+                'message' => $validated->messages()
+            ]);
+        }else{
+            $event = Event::find($id);
+            
+            if ($event) {
+                # code...
+                $event->update($request->all());
+
+                return response()->json([
+                    'message' => 'event updated successfully',
+                    'event' => $event
+                ]);
+            }else{
+                return response()->json([
+                    'message' => 'No event found'
+                ]); 
+            }
+
+            
+        }
+    }
+
+    public function updateStatus(Request $request, string $id)
+    {
+        //
+        $validated = Validator::make($request->all(),[
+            'event_status' => 'required|integer'
         ]);
 
         if($validated -> fails()){

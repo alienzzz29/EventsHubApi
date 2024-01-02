@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Models\EventAttendee;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class EventAttendeeController extends Controller
 {
@@ -64,10 +65,85 @@ class EventAttendeeController extends Controller
             ->first();
 
             // $eventAttendee = EventAttendee::with('event')->where('user_id', $request->user_id)->get();
+            // $eventData = $events->map(function ($event) {
+                // $eventWithMedia = $latestEventAttendeeWithEvent->load('media');
+                // return [
+                //     'id' => $latestEventAttendeeWithEvent->id,
+                //     'name' => $latestEventAttendeeWithEvent->event->name,
+                //     'description' => $latestEventAttendeeWithEvent->event->description,
+                //     'date_sched_start' => $latestEventAttendeeWithEvent->event->date_sched_start,
+                //     'date_sched_end' => $latestEventAttendeeWithEvent->event->date_sched_end,
+                //     'date_reg_deadline' => $latestEventAttendeeWithEvent->event->date_reg_deadline,
+                //     'est_attendants' => $latestEventAttendeeWithEvent->event->est_attendants,
+                //     'location' => $latestEventAttendeeWithEvent->event->location,
+                //     'category_id' => $latestEventAttendeeWithEvent->event->category, // Use the actual foreign key field
+                //     'venue_id' => $latestEventAttendeeWithEvent->event->venue, // Use the actual foreign key field
+                //     'event_status' => $latestEventAttendeeWithEvent->event->event_status,
+                //     'user_id' => $latestEventAttendeeWithEvent->user_id,
+                //     'media' => $latestEventAttendeeWithEvent->media->map(function ($media) {
+                //         return [
+                //             'id' => $media->id,
+                //             'file_name' => $media->file_name,
+                //             'url' => $media->getUrl(), // Get the URL of the media
+                //             // Add more attributes if needed
+                //         ];
+                //     }),
+                // ];
+            // });
+            if ($latestEventAttendeeWithEvent) {
+                $eventWithMedia = $latestEventAttendeeWithEvent->event->load('media');
+            
+                return [
+                    'id' => $latestEventAttendeeWithEvent->event->id,
+                    'name' => $latestEventAttendeeWithEvent->event->name,
+                    'description' => $latestEventAttendeeWithEvent->event->description,
+                    'date_sched_start' => $latestEventAttendeeWithEvent->event->date_sched_start,
+                    'date_sched_end' => $latestEventAttendeeWithEvent->event->date_sched_end,
+                    'date_reg_deadline' => $latestEventAttendeeWithEvent->event->date_reg_deadline,
+                    'est_attendants' => $latestEventAttendeeWithEvent->event->est_attendants,
+                    'location' => $latestEventAttendeeWithEvent->event->location,
+                    'category_id' => $latestEventAttendeeWithEvent->event->category,
+                    'venue_id' => $latestEventAttendeeWithEvent->event->venue,
+                    'event_status' => $latestEventAttendeeWithEvent->event->event_status,
+                    'user_id' => $latestEventAttendeeWithEvent->user_id,
+                    'media' => $latestEventAttendeeWithEvent->event->media->map(function ($media) {
+                        return [
+                            'id' => $media->id,
+                            'file_name' => $media->file_name,
+                            'url' => $media->getUrl(),
+                            // Add more attributes if needed
+                        ];
+                    }),
+                ];
+            }
 
             return response()->json([
                 'message' => 'Event Attendee added successfully',
-                'eventAttendee' => $latestEventAttendeeWithEvent
+                // 'eventAttendee' => $latestEventAttendeeWithEvent
+                'eventAttendee' => $eventWithMedia
+
+                // 'eventAttendee' => [
+                //     'id' => $eventAttendee->id,
+                //     'name' => $eventAttendee->event->name,
+                //     'description' => $eventAttendee->event->description,
+                //     'date_sched_start' => $eventAttendee->event->date_sched_start,
+                //     'date_sched_end' => $eventAttendee->event->date_sched_end,
+                //     'date_reg_deadline' => $eventAttendee->event->date_reg_deadline,
+                //     'est_attendants' => $eventAttendee->event->est_attendants,
+                //     'location' => $eventAttendee->event->location,
+                //     'category_id' => $eventAttendee->event->category, // Use the actual foreign key field
+                //     'venue_id' => $eventAttendee->event->venue, // Use the actual foreign key field
+                //     'event_status' => $eventAttendee->event->event_status,
+                //     'user_id' => $eventAttendee->user_id,
+                //     'media' => $eventAttendee->media->map(function ($media) {
+                //         return [
+                //             'id' => $media->id,
+                //             'file_name' => $media->file_name,
+                //             'url' => $media->getUrl(), // Get the URL of the media
+                //             // Add more attributes if needed
+                //         ];
+                //     }),
+                // ]
             ]);
         }
     }
@@ -258,7 +334,7 @@ class EventAttendeeController extends Controller
         }else{
             return response()->json([
                 'message' => 'No event attendees found for this user'
-            ], 404);
+            ]);
         }
     }
 }

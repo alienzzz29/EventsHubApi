@@ -55,7 +55,9 @@ Route::group(['middleware'=>['auth:sanctum']],function(){
     Route::get('/event/{id}/merchant', [EventController::class, 'showAllByUserId']);
     Route::get('/event/{user_id}/merchant/{event_status}', [EventController::class, 'showAllByUserIdAndStatus']);
     Route::post('/event/{id}/update', [EventController::class, 'update']);
+    Route::post('/event/{id}/update_status', [EventController::class, 'updateStatus']);
     Route::delete('/event/{id}/delete', [EventController::class, 'delete']);
+    Route::get('/events/admin', [EventController::class, 'indexAdmin']);
     // User
     Route::get('/users', [UserController::class, 'index']); // Show Users
     Route::post('/users', [UserController::class, 'store']);
