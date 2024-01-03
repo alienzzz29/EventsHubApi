@@ -218,6 +218,48 @@ class EventController extends Controller
             ]);
         }
     }
+    public function showByIdAuth(string $id)
+    {
+        //
+        // $event = Event::find($id);
+        $event = Event::with('media')->find($id);
+
+        if($event){
+            $eventData = [
+                'id' => $event->id,
+                'name' => $event->name,
+                'description' => $event->description,
+                'date_sched_start' => $event->date_sched_start,
+                'date_sched_end' => $event->date_sched_end,
+                'date_reg_deadline' => $event->date_reg_deadline,
+                'est_attendants' => $event->est_attendants,
+                'location' => $event->location,
+                'category_id' => $event->category,
+                'venue_id' => $event->venue,
+                'event_status' => $event->event_status,
+                'user_id' => $event->user_id
+            ];
+    
+            $mediaData = $event->getMedia('banners')->map(function ($media) {
+                return [
+                    'id' => $media->id,
+                    'file_name' => $media->file_name,
+                    'url' => $media->getUrl(), // Get the URL of the media
+                    // Add more attributes if needed
+                ];
+            });
+    
+            return response()->json([
+                'status' => 'success',
+                'event' => $eventData,
+                'media' => $mediaData,
+            ]);
+        }else{
+            return response()->json([
+                'message' => 'No event found'
+            ]);
+        }
+    }
 
     public function showAllByUserId(string $user_id)
     {
@@ -351,11 +393,38 @@ class EventController extends Controller
                 'message' => $validated->messages()
             ]);
         }else{
+            // if ($request->hasFile('images')) {
+            //     $event = Event::create($request->except('images'));
+        
+            //     $event->addMediaFromRequest('images')
+            //         ->toMediaCollection('banners'); // Use the collection name defined in the model
+        
+            //     $events = Event::with('media')->get(); // Optionally eager load media
+        
+            //     return response()->json([
+            //         'message' => 'Event added successfully',
+            //         'event' => $events
+            //     ]);
+            // } else {
+            //     return response()->json([
+            //         'message' => 'No image provided.'
+            //     ]);
+            // }
             $event = Event::find($id);
             
             if ($event) {
                 # code...
-                $event->update($request->all());
+                // $event->update($request->all());
+                if ($request->hasFile('images')) {
+                    $event->update($request->except('images')); // Update event details
+                    
+                    $event->clearMediaCollection('banners'); // Clear existing media
+                    
+                    $event->addMediaFromRequest('images')
+                        ->toMediaCollection('banners'); // Add new images to the media collection
+                } else {
+                    $event->update($request->all()); // Update event details without changing images
+                }
 
                 return response()->json([
                     'message' => 'event updated successfully',

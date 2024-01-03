@@ -293,7 +293,8 @@ class EventAttendeeController extends Controller
         // $eventAttendees = EventAttendee::with('event')->where('user_id',$user_id)->get();
         $eventAttendees = EventAttendee::with('event.media') // Eager load event and its media
         ->where('user_id', $user_id)
-        ->get();
+        // ->get();
+        ->paginate(7); 
 
         // if($eventAttendees){
         //     return response()->json([
@@ -327,13 +328,23 @@ class EventAttendeeController extends Controller
                 ];
             });
     
+            // return response()->json([
+            //     'status' => 'success',
+            //     'eventAttendees' => $formattedEventAttendees
+            // ]);
             return response()->json([
                 'status' => 'success',
-                'eventAttendees' => $formattedEventAttendees
+                'eventAttendees' => $formattedEventAttendees,
+                'pagination' => [
+                    'current_page' => $eventAttendees->currentPage(),
+                    'per_page' => $eventAttendees->perPage(),
+                    'total' => $eventAttendees->total(),
+                    // Add more pagination-related details if needed
+                ],
             ]);
         }else{
             return response()->json([
-                'message' => 'No event attendees found for this user'
+                'message' => 'No event attended for this user'
             ]);
         }
     }
