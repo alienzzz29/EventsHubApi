@@ -37,8 +37,9 @@ class Event extends Model implements HasMedia
         return $this->belongsTo(User::class);
     }
     
-    public function eventAttendees(){
-        return $this->hasMany(eventAttendee::class);
+    public function eventAttendees()
+    {
+        return $this->hasMany(EventAttendee::class);
     }
 
     public function registerMediaCollections(): void

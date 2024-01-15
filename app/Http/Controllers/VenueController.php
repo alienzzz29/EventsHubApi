@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Models\Venue;
+use Carbon\Carbon;
 
 class VenueController extends Controller
 {
@@ -38,10 +39,24 @@ class VenueController extends Controller
     //         ]);
     //     }
     // }
-    public function index()
+    public function index(Request $request)
 {
     //$venues = Venue::all();
-    $venues = Venue::paginate(8);
+    $venues_query = Venue::query();
+
+    // if($request->keyword){
+    //     $venues_query->where('name','LIKE','%'.$request->keyword.'%');
+    // }
+    
+    if ($request->keyword) {
+        $keyword = $request->keyword;
+        $venues_query->where(function ($query) use ($keyword) {
+            $query->where('name', 'LIKE', '%' . $keyword . '%')
+                ->orWhere('address', 'LIKE', '%' . $keyword . '%');
+        });
+    }
+    
+    $venues = $venues_query->paginate(8);
 
     if ($venues->count() > 0) {
         $transformedVenues = $venues->map(function ($venue) {
@@ -193,6 +208,33 @@ class VenueController extends Controller
                 'message' => 'No venue found'
             ]);
         }
+    }
+
+    public function getTotalVenues()
+    {
+      $totalVenues = Venue::count();
+
+      // Calculate the start and end dates for the last month
+      $startDate = Carbon::now()->subMonth()->startOfMonth();
+      $endDate = Carbon::now()->subMonth()->endOfMonth();
+  
+      // Get the total number of events within the last month
+      $totalVenuesLastMonth = Venue::whereBetween('created_at', [$startDate, $endDate])->count();
+  
+      // Get the total number of events for all time
+      $totalVenuesAllTime = Venue::count();
+  
+      // Calculate the increase
+      $increase = $totalVenuesAllTime - $totalVenuesLastMonth;
+  
+      // Calculate the percentage increase
+      $percentageIncrease = ($totalVenuesLastMonth > 0) ? round(($increase / $totalVenuesLastMonth) * 100, 2): 0;
+  
+
+        return response()->json([
+            'total_venues' => $totalVenues,
+            'percentage_increase_since_last_month' => $percentageIncrease
+        ]);
     }
 
 }

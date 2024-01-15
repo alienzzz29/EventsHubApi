@@ -288,14 +288,23 @@ class EventAttendeeController extends Controller
         }
     }
 
-    public function getByUserId(int $user_id)
+    public function getByUserId(int $user_id, Request $request)
     {
-        // $eventAttendees = EventAttendee::with('event')->where('user_id',$user_id)->get();
-        $eventAttendees = EventAttendee::with('event.media') // Eager load event and its media
-        ->where('user_id', $user_id)
-        // ->get();
-        ->paginate(7); 
+        // $eventAttendees = EventAttendee::with('event.media') // Eager load event and its media
+        // ->where('user_id', $user_id)
+        // // ->get();
+        // ->paginate(7); 
+        $eventAttendees_query = EventAttendee::with('event.media') // Eager load event and its media
+        ->where('user_id', $user_id);
 
+        if ($request->keyword) {
+            // $eventAttendees_query->where('name','LIKE','%'.$request->keyword.'%');
+            $eventAttendees_query->whereHas('event', function ($query) use ($request) {
+                $query->where('name', 'LIKE', '%' . $request->keyword . '%');
+            });
+        }
+
+        $eventAttendees = $eventAttendees_query->paginate(7);
         // if($eventAttendees){
         //     return response()->json([
         //         'status' => 'success',

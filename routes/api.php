@@ -42,12 +42,14 @@ Route::group(['middleware'=>['auth:sanctum']],function(){
     Route::get('/venue/{id}', [VenueController::class, 'show']);
     Route::post('/venue/{id}/update', [VenueController::class, 'update']);
     Route::delete('/venue/{id}/delete', [VenueController::class, 'delete']);
+    Route::get('/venues/total', [VenueController::class, 'getTotalVenues']);
     // Category
     // Route::get('/categories', [CategoryController::class, 'index']);
     Route::post('/categories', [CategoryController::class, 'store']);
     Route::get('/category/{id}', [CategoryController::class, 'show']);
     Route::post('/category/{id}/update', [CategoryController::class, 'update']);
     Route::delete('/category/{id}/delete', [CategoryController::class, 'delete']);
+    Route::get('/categories/total', [CategoryController::class, 'getTotalCategories']);
     // Event
     // Route::get('/events', [EventController::class, 'index']);
     Route::post('/events', [EventController::class, 'store']);
@@ -58,14 +60,18 @@ Route::group(['middleware'=>['auth:sanctum']],function(){
     Route::post('/event/{id}/update_status', [EventController::class, 'updateStatus']);
     Route::delete('/event/{id}/delete', [EventController::class, 'delete']);
     Route::get('/events/admin', [EventController::class, 'indexAdmin']);
+    Route::get('/events/total', [EventController::class, 'getTotalEvents']);
+    Route::get('/events/total_events_category', [EventController::class, 'getTotalEventsByCategory']);
+    Route::get('/events/total_events_venue', [EventController::class, 'getTotalEventsByVenue']);
+    Route::get('/events/top_events_by_attendance', [EventController::class, 'topEventsByAttendance']);
     // User
     Route::get('/users', [UserController::class, 'index']); // Show Users
     Route::post('/users', [UserController::class, 'store']);
     // Route::get('/users/{id}', [UserController::class, 'show']);
     Route::post('/users/{id}/update', [UserController::class, 'update']);
     Route::delete('/users/{id}/delete', [UserController::class, 'delete']);
-
     Route::get('/users/search/{name}', [UserController::class, 'search']); // Search User
+    Route::get('/users/total', [UserController::class, 'getTotalUsers']);
     // Route::get('/users/events_attended/{id}', [UserController::class, 'eventsAttended']); // Search User
     // Event Attendeee
     Route::get('/event_attendees', [EventAttendeeController::class, 'index']);

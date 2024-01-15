@@ -7,14 +7,30 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
+use Illuminate\Support\Facades\DB;
+use Carbon\Carbon; 
 
 class UserController extends Controller
 {
     //
-    public function index(){
+    public function index(Request $request){
+        $keyword = $request->keyword;
         // return User::all();
         // $users = User::with('roles')->paginate(8);
-        $users = User::with('roles')->where('id', '!=', 1)->paginate(8);
+        $users_query = User::with('roles')->where('id', '!=', 1);
+
+        if($keyword){
+            $users_query->where(function ($query) use ($keyword) {
+                $query->where(DB::raw("CONCAT(first_name, ' ', last_name)"), 'LIKE', '%' . $keyword . '%')
+                      ->orWhere('email', 'LIKE', '%' . $keyword . '%');
+            });
+        }
+
+        $users = $users_query->paginate(8);
+
+        // $users = User::with('roles')->where('id', '!=', 1)->paginate(8);
+
+        
 
         return response()->json([
             'status' => 'success',
@@ -215,6 +231,32 @@ class UserController extends Controller
         }
     }
 
+    public function getTotalUsers()
+    {
+      $totalUsers = User::count();
+
+      // Calculate the start and end dates for the last month
+      $startDate = Carbon::now()->subMonth()->startOfMonth();
+      $endDate = Carbon::now()->subMonth()->endOfMonth();
+  
+      // Get the total number of events within the last month
+      $totalUsersLastMonth = User::whereBetween('created_at', [$startDate, $endDate])->count();
+  
+      // Get the total number of events for all time
+      $totalUsersAllTime = User::count();
+  
+      // Calculate the increase
+      $increase = $totalUsersAllTime - $totalUsersLastMonth;
+  
+      // Calculate the percentage increase
+      $percentageIncrease = ($totalUsersLastMonth > 0) ? round(($increase / $totalUsersLastMonth) * 100, 2): 0;
+  
+
+        return response()->json([
+            'total_users' => $totalUsers,
+            'percentage_increase_since_last_month' => $percentageIncrease
+        ]);
+    }
     // public function update(Request $request, string $id)
     // {
     //     //

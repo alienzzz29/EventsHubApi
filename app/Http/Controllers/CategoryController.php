@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Models\Category;
+use Carbon\Carbon;
 
 class CategoryController extends Controller
 {
@@ -17,15 +18,37 @@ class CategoryController extends Controller
      * @response 200 {"status": "success","posts": [{"id": 4,"user_id": 10,"text": "Good Evening!","created_at": "2023-10-09T08:21:34.000000Z","updated_at": "2023-10-09T08:22:25.000000Z"}]}
      * 
      */
-    public function index()
+    public function index(Request $request)
     {
         //
-        $categories = Category::all();
+        // $categories = Category::all();
+        
+        $categories_query =  Category::query();
+         
+        if($request->keyword){
+            $categories_query->where('name','LIKE','%'.$request->keyword.'%');
+        }
+        $categories = $categories_query->paginate(8);
 
         if($categories -> count() >0){
+            // return response()->json([
+            //     'status' => 'success',
+            //     'categories' => $categories
+            // ]);
+            $transformedCategories = $categories->map(function ($category) {
+                return [
+                    'id' => $category->id,
+                    'name' => $category->name
+                ];
+            });
             return response()->json([
                 'status' => 'success',
-                'categories' => $categories
+                'categories' => $transformedCategories,
+                'pagination' => [
+                    'current_page' => $categories->currentPage(),
+                    'total' => $categories->total(),
+                    'per_page' => $categories->perPage(),
+                ]
             ]);
         }else{
             return response()->json([
@@ -154,6 +177,33 @@ class CategoryController extends Controller
                 'message' => 'No category found'
             ]);
         }
+    }
+
+    public function getTotalCategories()
+    {
+      $totalCategories = Category::count();
+
+      // Calculate the start and end dates for the last month
+      $startDate = Carbon::now()->subMonth()->startOfMonth();
+      $endDate = Carbon::now()->subMonth()->endOfMonth();
+  
+      // Get the total number of events within the last month
+      $totalCategoriesLastMonth = Category::whereBetween('created_at', [$startDate, $endDate])->count();
+  
+      // Get the total number of events for all time
+      $totalCategoriesAllTime = Category::count();
+  
+      // Calculate the increase
+      $increase = $totalCategoriesAllTime - $totalCategoriesLastMonth;
+  
+      // Calculate the percentage increase
+      $percentageIncrease = ($totalCategoriesLastMonth > 0) ? round(($increase / $totalCategoriesLastMonth) * 100, 2): 0;
+  
+
+        return response()->json([
+            'total_categories' => $totalCategories,
+            'percentage_increase_since_last_month' => $percentageIncrease
+        ]);
     }
 
 }
