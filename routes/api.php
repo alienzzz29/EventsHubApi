@@ -81,6 +81,7 @@ Route::group(['middleware'=>['auth:sanctum']],function(){
     Route::post('/event_attendee/{id}/update', [EventAttendeeController::class, 'update']);
     Route::delete('/event_attendee/event/{event_id}/user/{user_id}/delete', [EventAttendeeController::class, 'delete']);
     Route::get('/event_attendee/user/{user_id}', [EventAttendeeController::class, 'getByUserId']);
+    Route::get('/event_attendee/event/{event_id}', [EventAttendeeController::class, 'getByEventId']);
 });
 
 

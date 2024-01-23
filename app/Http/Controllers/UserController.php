@@ -15,8 +15,6 @@ class UserController extends Controller
     //
     public function index(Request $request){
         $keyword = $request->keyword;
-        // return User::all();
-        // $users = User::with('roles')->paginate(8);
         $users_query = User::with('roles')->where('id', '!=', 1);
 
         if($keyword){
@@ -27,8 +25,6 @@ class UserController extends Controller
         }
 
         $users = $users_query->paginate(8);
-
-        // $users = User::with('roles')->where('id', '!=', 1)->paginate(8);
 
         
 
@@ -89,12 +85,10 @@ class UserController extends Controller
         }
 
         if($user) {
-            // $user->is_active = 1;
             $user->save();
         }
 
         $token = $user->createToken('myapptoken')->plainTextToken;
-        // $token = $user->createAuthToken('myapptoken',20)->plainTextToken;
 
         $response = [
             'user' => [
@@ -153,8 +147,6 @@ class UserController extends Controller
         $token = $user->createToken('myapptoken')->plainTextToken;
 
         $response = [
-            // 'user' => $user,
-            // 'token' => $token
             'user' => [
                 'id' => $user->id,
                 'first_name' => $user->first_name,
@@ -176,26 +168,13 @@ class UserController extends Controller
             'last_name' => 'required|string',
             'contact_no' => 'required|string',
             'password' => 'sometimes|required|string|confirmed'// Only required when provided
-            // 'role_id' => 'required|integer'
         ]);
         
         $user = User::find($id);
 
         if ($user) {
-            // $user->update([
-            //     'first_name' => $fields['first_name'],
-            //     'last_name' => $fields['last_name'],
-            //     'contact_no' => $fields['contact_no'],
-            //     'password' => isset($fields['password']) ? bcrypt($fields['password']) : $user->password,
-            // ]);
 
             $user->update($request->all());
-
-            // $role = Role::where('id', $fields['role_id'])->first();
-            // if ($role) {
-            //     $user->syncRoles([$role->id]);
-            // }
-
             return response()->json([
                 'message' => 'User updated successfully',
                 'user' => [
@@ -257,47 +236,5 @@ class UserController extends Controller
             'percentage_increase_since_last_month' => $percentageIncrease
         ]);
     }
-    // public function update(Request $request, string $id)
-    // {
-    //     //
-    //     $validated = Validator::make($request->all(),[
-    //         'name' => 'required',
-    //         'description' => 'required | max:166',
-    //         'date_sched_start' => 'required',
-    //         'date_sched_end' => 'required',
-    //         'date_reg_deadline' => 'required',
-    //         'est_attendants' => 'required | integer',
-    //         'location' => 'required',
-    //         'images' => 'required|image|mimes:jpg,png,jpeg,gif,svg|max:2048', 
-    //         'category_id' => 'required|integer',
-    //         'venue_id' => 'required|integer',
-    //         'event_status' => 'required|integer',
-    //         'user_id' => 'required|integer',
-    //     ]);
-
-    //     if($validated -> fails()){
-    //         return response()->json([
-    //             'message' => $validated->messages()
-    //         ]);
-    //     }else{
-    //         $event = Event::find($id);
-            
-    //         if ($event) {
-    //             # code...
-    //             $event->update($request->all());
-
-    //             return response()->json([
-    //                 'message' => 'event updated successfully',
-    //                 'event' => $event
-    //             ]);
-    //         }else{
-    //             return response()->json([
-    //                 'message' => 'No event found'
-    //             ]); 
-    //         }
-
-            
-    //     }
-    // }
    
 }

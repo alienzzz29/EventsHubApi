@@ -23,7 +23,6 @@ class EventController extends Controller
      */
     public function index(Request $request)
     {
-        //$events = Event::all();
         $events_query = Event::where('event_status', 1);
         
         if($request->keyword){
@@ -87,11 +86,6 @@ class EventController extends Controller
             });
         }
 
-        // if($request->keyword){
-        //     $events_query->where('name','LIKE','%'.$request->keyword.'%');
-        // }
-        // $events_query->where('event_status', 1);
-
         $events = $events_query->paginate(10);
 
         if($events -> count() >0){
@@ -139,9 +133,7 @@ class EventController extends Controller
 
     public function indexAdmin(Request $request)
     {
-        //$events = Event::all();
         $events_query = Event::whereIn('event_status', [0, 1]);
-        // $events = Event::whereIn('event_status', [0, 1])->paginate(10);
 
         if ($request->keyword) {
             $events_query->where('name','LIKE','%'.$request->keyword.'%');
@@ -255,8 +247,6 @@ class EventController extends Controller
      */
     public function show(string $id)
     {
-        //
-        // $event = Event::find($id);
         $event = Event::with('media')->where('event_status', 1)
               ->find($id);
 
@@ -298,8 +288,6 @@ class EventController extends Controller
     }
     public function showByIdAuth(string $id)
     {
-        //
-        // $event = Event::find($id);
         $event = Event::with('media')->find($id);
 
         if($event){
@@ -341,8 +329,6 @@ class EventController extends Controller
 
     public function showAllByUserId(string $user_id)
     {
-        //
-        // $event = Event::find($id);
         $events = Event::with('media')
         ->where('user_id', $user_id) // Filter events by user_id
         ->get(); // Use get() instead of find()
@@ -389,13 +375,6 @@ class EventController extends Controller
 
     public function showAllByUserIdAndStatus(string $user_id, int $event_status, Request $request)
     {
-        //
-        // $event = Event::find($id);
-        // $events = Event::with('media')
-        // ->where('user_id', $user_id) // Filter events by user_id
-        // ->where('event_status', $event_status)
-        // ->paginate(5); // Use get() instead of find()
-        
         $event_query = Event::with('media')
         ->where('user_id', $user_id) // Filter events by user_id
         ->where('event_status', $event_status);
@@ -481,28 +460,10 @@ class EventController extends Controller
                 'message' => $validated->messages()
             ]);
         }else{
-            // if ($request->hasFile('images')) {
-            //     $event = Event::create($request->except('images'));
-        
-            //     $event->addMediaFromRequest('images')
-            //         ->toMediaCollection('banners'); // Use the collection name defined in the model
-        
-            //     $events = Event::with('media')->get(); // Optionally eager load media
-        
-            //     return response()->json([
-            //         'message' => 'Event added successfully',
-            //         'event' => $events
-            //     ]);
-            // } else {
-            //     return response()->json([
-            //         'message' => 'No image provided.'
-            //     ]);
-            // }
             $event = Event::find($id);
             
             if ($event) {
                 # code...
-                // $event->update($request->all());
                 if ($request->hasFile('images')) {
                     $event->update($request->except('images')); // Update event details
                     
@@ -569,20 +530,6 @@ class EventController extends Controller
      */
     public function delete(string $id)
     {
-        // //
-        // $event = Event::find($id);
-        // if($event){
-        //     $event->delete();
-        //     $events = Event::all();
-        //     return response()->json([
-        //         'message' => 'events deleted successfully',
-        //         'remaining events' => $events
-        //     ]);
-        // }else{
-        //     return response()->json([
-        //         'message' => 'No event found'
-        //     ]);
-        // }
         $event = Event::find($id);
         if($event){
             // Detach relationships from event_attendee table
@@ -695,13 +642,6 @@ class EventController extends Controller
                     'id' => $eventWithMedia->id,
                     'name' => $eventWithMedia->name,
                     'attendees_count' => $event->event_attendees_count,
-                    // 'event_attendees' => $event->eventAttendees->map(function ($eventAttendee) {
-                    //     return [
-                    //         'user_id' => $eventAttendee->user_id,
-                    //         // 'attendee_name' => $eventAttendee->attendee_name,
-                    //         // Add more attributes if needed
-                    //     ];
-                    // }),
                 ];
             });
 

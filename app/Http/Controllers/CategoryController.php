@@ -20,9 +20,6 @@ class CategoryController extends Controller
      */
     public function index(Request $request)
     {
-        //
-        // $categories = Category::all();
-        
         $categories_query =  Category::query();
          
         if($request->keyword){
@@ -31,10 +28,6 @@ class CategoryController extends Controller
         $categories = $categories_query->paginate(8);
 
         if($categories -> count() >0){
-            // return response()->json([
-            //     'status' => 'success',
-            //     'categories' => $categories
-            // ]);
             $transformedCategories = $categories->map(function ($category) {
                 return [
                     'id' => $category->id,

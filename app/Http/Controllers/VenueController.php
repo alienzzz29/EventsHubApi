@@ -17,36 +17,10 @@ class VenueController extends Controller
      * @response 200 {"status": "success","posts": [{"id": 4,"user_id": 10,"text": "Good Evening!","created_at": "2023-10-09T08:21:34.000000Z","updated_at": "2023-10-09T08:22:25.000000Z"}]}
      * 
      */
-    // public function index()
-    // {
-    //     //
-    //     // $venues = Venue::all();
-    //     $venues = Venue::paginate(8);
-    //     if($venues -> count() >0){
-    //         return response()->json([
-    //             'status' => 'success',
-    //             // 'venues' => $venues,
-    //             // 'venues' => [],
-    //             'pagination' => [
-    //                 'current_page' => $venues->currentPage(),
-    //                 'total' => $venues->total(),
-    //                 'per_page' => $venues->perPage(),
-    //             ]
-    //         ]);
-    //     }else{
-    //         return response()->json([
-    //             'message' => 'Venues empty'
-    //         ]);
-    //     }
-    // }
     public function index(Request $request)
 {
-    //$venues = Venue::all();
     $venues_query = Venue::query();
 
-    // if($request->keyword){
-    //     $venues_query->where('name','LIKE','%'.$request->keyword.'%');
-    // }
     
     if ($request->keyword) {
         $keyword = $request->keyword;
